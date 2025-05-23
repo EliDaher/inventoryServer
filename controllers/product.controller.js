@@ -32,33 +32,23 @@ const addProduct = async (req, res) => {
     }
 };
 
-// Login
-const Login = async (req, res) => {
+// جلب كل المنتجات
+const getAllProducts = async (req, res) => {
     try {
-        const { username, password } = req.body;
 
-        console.log(username + " // " + password)
-        if (!username || !password) {
-            return res.status(400).json({ error: "Username and password are required." });
-        }
-
-        const UserRef = ref(database, `users/${username}`);
-        const snapshot = await get(UserRef);
+        const ProductsRef = ref(database, `products`);
+        const snapshot = await get(ProductsRef);
 
         if (!snapshot.exists()) {
-            return res.status(404).json({ error: "User not found." });
+            return res.status(404).json({ error: "Products not found." });
         }
 
-        const userData = snapshot.val();
+        const productsData = snapshot.val();
 
-        if (userData.password !== password) {
-            return res.status(401).json({ error: "Invalid credentials." });
-        }
-
-        return res.status(200).json({ success: true, message: "Logged in successfully.", userData: JSON.parse(JSON.stringify(userData)) });
+        return res.status(200).json({ productsData: productsData });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 };
 
-module.exports = { addProduct, Login };
+module.exports = { addProduct, getAllProducts };

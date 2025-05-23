@@ -5,7 +5,7 @@ require('dotenv').config(); // تحميل متغيرات البيئة
 
 
 // Firebase configuration
-/*
+
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_apiKey,
   authDomain: process.env.FIREBASE_authDomain,
@@ -15,8 +15,9 @@ const firebaseConfig = {
   messagingSenderId:process.env.FIREBASE_messagingSenderId,
   appId:process.env.FIREBASE_appId,
   measurementId:process.env.FIREBASE_measurementId
-};*/
+};
 
+/*
 const firebaseConfig = {
   apiKey: "AIzaSyCxygxIX7nzHqBF7DPpmPFA8INpQShJnZk",
   authDomain: "inventory-679b2.firebaseapp.com",
@@ -27,7 +28,7 @@ const firebaseConfig = {
   appId: "1:142126179008:web:a5bb45a2f1bcbe84540325",
   measurementId: "G-T0DP8L6TPQ"
 };
-
+*/
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
