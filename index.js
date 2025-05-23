@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 app.post('/addProduct', addProduct)
 
 //اعادة كل المنتجات
-app.post('/getAllProducts', getAllProducts)
+app.get('/getAllProducts', getAllProducts)
 
 
 
