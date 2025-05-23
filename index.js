@@ -6,7 +6,8 @@ require('dotenv').config(); // تحميل متغيرات البيئة
 const { Server } = require("socket.io");
 const cron = require("node-cron");
 const { Login, SignUp } = require('./controllers/auth.controller')
-const { addProduct, getAllProducts } = require('./controllers/product.controller')
+const { addProduct, getAllProducts } = require('./controllers/product.controller');
+const { addCategory, getCategory } = require('./controllers/category.contoller');
 
 
 const app = express();
@@ -47,8 +48,11 @@ app.post('/addProduct', addProduct)
 //اعادة كل المنتجات
 app.get('/getAllProducts', getAllProducts)
 
+//اضافة تصنيف
+app.post('/addCategory', addCategory)
 
-
+//اعادة كل التصنيفات
+app.get('/getCategory', getCategory)
 
 
 
