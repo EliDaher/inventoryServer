@@ -1,4 +1,4 @@
-const { ref, set, get, push, child } = require("firebase/database");
+const { ref, set, get, push, child, update } = require("firebase/database");
 const { database } = require('../firebaseConfig.js');
 
 // اضافة منتج
@@ -26,6 +26,35 @@ const addProduct = async (req, res) => {
         await set(newRef, preparedProduct);
 
         return res.status(201).json({ success: true, message: "Product added successfully.", id: newRef.key });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+//تعديل المنتج
+const updateProduct = async (req, res) => {
+    try {
+        const newProduct = req.body;
+
+        if (!newProduct || !newProduct.name || !newProduct.buyPrice || !newProduct.sellPrice || !newProduct.category) {
+            return res.status(400).json({ error: "Missing product fields." });
+        }
+        
+        const productsRef = ref(database, `products/${newProduct.id}`);
+        const preparedProduct = {
+          ...newProduct,
+          id: newProduct.id,
+          buyPrice: Number(newProduct.buyPrice),
+          sellPrice: Number(newProduct.sellPrice),
+          discount: Number(newProduct.discount),
+          category: newProduct.category.trim(),
+          name: newProduct.name.trim(),
+        };
+        console.log(preparedProduct)
+        await update(productsRef, preparedProduct);
+
+        return res.status(201).json({ success: true, message: "Product updated successfully.", id: newProduct.id });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ error: error.message });
