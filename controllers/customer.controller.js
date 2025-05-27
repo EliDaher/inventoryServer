@@ -45,67 +45,72 @@ const getCustomers = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
-
 const addCustomerInvoicePayment = async (req, res) => {
-  try {
-    const newInvoice = req.body;
-
-    if (!newInvoice || !newInvoice.customerName) {
-      return res.status(400).json({ error: "Missing Invoice fields." });
-    }
-
-    const customerRef = ref(database, `customer/${newInvoice.customerName}`);
-    const customerSnapshot = await get(customerRef);
-
-    if (!customerSnapshot.exists()) {
-      return res.status(404).json({ error: "Customer not found." });
-    }
-
-    const customerData = customerSnapshot.val();
+    try {
+        const newInvoice = req.body;
     
-    const customerInvRef = ref(database, `customer/${newInvoice.customerName}/invoices`);
-    const newRef = push(customerInvRef);
-
-    const preparedInvoice = {
-      finalAmount: -newInvoice.finalAmount,
-      createdAt: newInvoice.createdAt || new Date().toISOString(),
-      id: newRef.key,
-      items: newInvoice.items,
-      balance: customerData.balance ? customerData.balance - Number(newInvoice.finalAmount) : -Number(newInvoice.finalAmount)
-    };
-
-    await set(newRef, preparedInvoice);
-
-    const invoiceRef = ref(database, `invoices/${newRef.key}`);
-    await set(invoiceRef, newInvoice);
-
-    for (const item of newInvoice.items) {
-      const productQuantityRef = ref(database, `products/${item.id}/quantity`);
-      const snapshot = await get(productQuantityRef);
-
-      if (snapshot.exists()) {
-        const currentQuantity = snapshot.val();
-        const newQuantity = currentQuantity - item.quantity;
-
-        if (newQuantity < 0) {
-          return res.status(400).json({ error: `Not enough quantity for product ID ${item.id}` });
+        if (!newInvoice || !newInvoice.customerName) {
+          return res.status(400).json({ error: "Missing Invoice fields." });
         }
-
-        await set(productQuantityRef, newQuantity);
-      } else {
-        return res.status(404).json({ error: `Product ID ${item.id} not found.` });
-      }
+    
+        const customerRef = ref(database, `customer/${newInvoice.customerName}`);
+        const customerSnapshot = await get(customerRef);
+    
+        if (!customerSnapshot.exists()) {
+          return res.status(404).json({ error: "Customer not found." });
+        }
+    
+        const customerData = customerSnapshot.val();
+    
+        // 1. إنشاء مفتاح جديد للفاتورة ضمن invoices للزبون
+        const customerInvoicesRef = ref(database, `customer/${newInvoice.customerName}/invoices`);
+        const newInvoiceRef = push(customerInvoicesRef); // push تعطيك مفتاح جديد تلقائي
+    
+        const preparedInvoice = {
+          finalAmount: -Number(newInvoice.finalAmount), // خصم المبلغ
+          createdAt: newInvoice.createdAt || new Date().toISOString(),
+          id: newInvoiceRef.key,
+          items: newInvoice.items,
+        };
+    
+        // 2. تحديث الرصيد بعد الخصم
+        const updatedBalance = customerData.balance ? customerData.balance - Number(newInvoice.finalAmount) : -Number(newInvoice.finalAmount);
+    
+        // 3. حفظ الفاتورة ضمن مسار الزبون
+        await set(newInvoiceRef, preparedInvoice);
+    
+        // 4. حفظ الفاتورة ضمن مسار عام للفواتير (اختياري حسب نظامك)
+        const generalInvoiceRef = ref(database, `invoices/${newInvoiceRef.key}`);
+        await set(generalInvoiceRef, newInvoice);
+    
+        // 5. تحديث رصيد الزبون
+        await set(ref(database, `customer/${newInvoice.customerName}/balance`), updatedBalance);
+    
+        // 6. تحديث كمية المنتجات
+        for (const item of newInvoice.items) {
+          const productQuantityRef = ref(database, `products/${item.id}/quantity`);
+          const snapshot = await get(productQuantityRef);
+        
+          if (snapshot.exists()) {
+            const currentQuantity = snapshot.val();
+            const newQuantity = currentQuantity - item.quantity;
+        
+            if (newQuantity < 0) {
+              return res.status(400).json({ error: `Not enough quantity for product ID ${item.id}` });
+            }
+        
+            await set(productQuantityRef, newQuantity);
+          } else {
+            return res.status(404).json({ error: `Product ID ${item.id} not found.` });
+          }
+        }
+    
+        return res.status(201).json({ success: true, message: "Invoice added successfully.", id: newInvoiceRef.key });
+    
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
     }
-
-    // تحديث رصيد الزبون
-    await set(ref(database, `customer/${newInvoice.customerName}/balance`), preparedInvoice.balance);
-
-    return res.status(201).json({ success: true, message: "Invoice added successfully.", id: newRef.key });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
 };
 
 module.exports = { addCustomer, getCustomers, addCustomerInvoicePayment };
