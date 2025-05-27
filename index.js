@@ -62,7 +62,7 @@ app.post('/addCustomer', addCustomer)
 app.get('/getCustomers', getCustomers)
 
 //بيع بضاعة
-app.get('/addCustomerInvoicePayment', addCustomerInvoicePayment)
+app.post('/addCustomerInvoicePayment', addCustomerInvoicePayment)
 
 
 
