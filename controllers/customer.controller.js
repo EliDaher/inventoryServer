@@ -57,6 +57,10 @@ const addCustomerInvoicePayment = async (req, res) => {
     const customerRef = ref(database, `customer/${newInvoice.customerName}`);
     const customerSnapshot = await get(customerRef);
 
+    if (!customerSnapshot.exists()) {
+      return res.status(404).json({ error: "Customer not found." });
+    }
+
     const customerData = customerSnapshot.val();
     const newRef = push(customerRef);
 
@@ -65,7 +69,7 @@ const addCustomerInvoicePayment = async (req, res) => {
       createdAt: newInvoice.createdAt || new Date().toISOString(),
       id: newRef.key,
       items: newInvoice.items,
-      balance: customerSnapshot.exists() ? customerData.balance - Number(newInvoice.finalAmount) : -Number(newInvoice.finalAmount)
+      balance: customerData.balance ? customerData.balance - Number(newInvoice.finalAmount) : -Number(newInvoice.finalAmount)
     };
 
     await set(newRef, preparedInvoice);
