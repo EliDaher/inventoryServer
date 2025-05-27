@@ -62,7 +62,9 @@ const addCustomerInvoicePayment = async (req, res) => {
     }
 
     const customerData = customerSnapshot.val();
-    const newRef = push(customerRef);
+    
+    const customerInvRef = ref(database, `customer/${newInvoice.customerName}/invoices`);
+    const newRef = push(customerInvRef);
 
     const preparedInvoice = {
       finalAmount: -newInvoice.finalAmount,
