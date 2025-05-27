@@ -8,6 +8,7 @@ const cron = require("node-cron");
 const { Login, SignUp } = require('./controllers/auth.controller')
 const { addProduct, getAllProducts } = require('./controllers/product.controller');
 const { addCategory, getCategory } = require('./controllers/category.contoller');
+const { addCustomer, getCustomers } = require('./controllers/customer.controller');
 
 
 const app = express();
@@ -53,6 +54,12 @@ app.post('/addCategory', addCategory)
 
 //اعادة كل التصنيفات
 app.get('/getCategory', getCategory)
+
+//اضافة تصنيف
+app.post('/addCustomer', addCustomer)
+
+//اعادة كل التصنيفات
+app.get('/getCustomers', getCustomers)
 
 
 
