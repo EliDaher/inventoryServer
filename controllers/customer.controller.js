@@ -46,61 +46,60 @@ const getCustomers = async (req, res) => {
     }
 };
 
-
 const addCustomerInvoicePayment = async (req, res) => {
-    try {
-        const newInvoice = req.body;
+  try {
+    const newInvoice = req.body;
 
-        if (!newInvoice || !newInvoice.customerName) {
-          return res.status(400).json({ error: "Missing Invoice fields." });
+    if (!newInvoice || !newInvoice.customerName) {
+      return res.status(400).json({ error: "Missing Invoice fields." });
+    }
+
+    const customerRef = ref(database, `customer/${newInvoice.customerName}`);
+    const customerSnapshot = await get(customerRef);
+
+    const customerData = customerSnapshot.val();
+    const newRef = push(customerRef);
+
+    const preparedInvoice = {
+      finalAmount: -newInvoice.finalAmount,
+      createdAt: newInvoice.createdAt || new Date().toISOString(),
+      id: newRef.key,
+      items: newInvoice.items,
+      balance: customerSnapshot.exists() ? customerData.balance - Number(newInvoice.finalAmount) : -Number(newInvoice.finalAmount)
+    };
+
+    await set(newRef, preparedInvoice);
+
+    const invoiceRef = ref(database, `invoices/${newRef.key}`);
+    await set(invoiceRef, newInvoice);
+
+    for (const item of newInvoice.items) {
+      const productQuantityRef = ref(database, `products/${item.id}/quantity`);
+      const snapshot = await get(productQuantityRef);
+
+      if (snapshot.exists()) {
+        const currentQuantity = snapshot.val();
+        const newQuantity = currentQuantity - item.quantity;
+
+        if (newQuantity < 0) {
+          return res.status(400).json({ error: `Not enough quantity for product ID ${item.id}` });
         }
 
-        // المرجع الخاص بالزبون (عميل)
-        const customerRef = ref(database, `customers/${newInvoice.customerName}`);
+        await set(productQuantityRef, newQuantity);
+      } else {
+        return res.status(404).json({ error: `Product ID ${item.id} not found.` });
+      }
+    }
 
-        // إضافة فاتورة جديدة داخل الزبون
-        const newRef = push(customerRef);
+    // تحديث رصيد الزبون
+    await set(ref(database, `customer/${newInvoice.customerName}/balance`), preparedInvoice.balance);
 
-        const preparedInvoice = {
-          finalAmount: -newInvoice.finalAmount, // لو تريد تخزين السالب لأسباب محاسبية
-          createdAt: newInvoice.createdAt || new Date().toISOString(),
-          id: newRef.key,
-          items: newInvoice.items,
-        };
+    return res.status(201).json({ success: true, message: "Invoice added successfully.", id: newRef.key });
 
-        // إضافة الفاتورة داخل بيانات الزبون
-        await set(newRef, preparedInvoice);
-
-        // إضافة الفاتورة داخل قسم الفواتير الرئيسي
-        const invoiceRef = ref(database, `invoices/${newRef.key}`);
-        await set(invoiceRef, newInvoice);
-
-        // تحديث كمية المنتجات بعد البيع
-        for (const item of newInvoice.items) {
-            const productQuantityRef = ref(database, `products/${item.id}/quantity`);
-
-            // قراءة الكمية الحالية
-            const snapshot = await get(productQuantityRef);
-            if (snapshot.exists()) {
-              const currentQuantity = snapshot.val();
-              const newQuantity = currentQuantity - item.quantity;
-
-              // التحقق من الكمية لتجنب القيم السلبية
-              if (newQuantity < 0) {
-                return res.status(400).json({ error: `Not enough quantity for product ID ${item.id}` });
-              }
-
-              // تحديث الكمية الجديدة
-              await set(productQuantityRef, newQuantity);
-            } else {
-              return res.status(404).json({ error: `Product ID ${item.id} not found.` });
-            }
-        }
-
-        return res.status(201).json({ success: true, message: "Invoice added successfully.", id: newRef.key });
-    } catch (error) {
-        console.error(error);
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: error.message });
-}
-}
+  }
+};
+
 module.exports = { addCustomer, getCustomers, addCustomerInvoicePayment };
