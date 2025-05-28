@@ -149,7 +149,7 @@ const addPayment = async (req, res) => {
         await set(balanceRef, Number(oldBalance + Number(paymentDetails.paymentValue)))
 
         
-        const customerInvoicesRef = ref(database, `customer/${paymentDetails.customerName}/invoices`);
+        const customerInvoicesRef = ref(database, `customer/${paymentDetails.customerId}/invoices`);
         const preparedInvoice = {
             finalAmount: Number(paymentDetails.paymentValue),
             createdAt: paymentDetails.createdAt || new Date().toISOString(),
