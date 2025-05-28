@@ -8,7 +8,7 @@ const cron = require("node-cron");
 const { Login, SignUp } = require('./controllers/auth.controller')
 const { addProduct, getAllProducts } = require('./controllers/product.controller');
 const { addCategory, getCategory } = require('./controllers/category.controller');
-const { addCustomer, getCustomers, addCustomerInvoicePayment } = require('./controllers/customer.controller');
+const { addCustomer, getCustomers, addCustomerInvoicePayment, addPayment } = require('./controllers/customer.controller');
 
 
 const app = express();
@@ -63,6 +63,9 @@ app.get('/getCustomers', getCustomers)
 
 //بيع بضاعة
 app.post('/addCustomerInvoicePayment', addCustomerInvoicePayment)
+
+// اضافة دفعة
+app.post('/addPayment', addPayment)
 
 
 
