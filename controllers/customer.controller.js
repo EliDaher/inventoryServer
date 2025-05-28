@@ -6,7 +6,7 @@ const today = (() => {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  return `${day}-${month}-${year}`;
 })();
 
 
@@ -130,9 +130,8 @@ const addPayment = async (req, res) => {
         if (!paymentDetails || !paymentDetails.paymentValue || !paymentDetails.customerId || !paymentDetails.customerName) {
             return res.status(400).json({ error: "Missing payment Value or customer Id fields." });
         }
-
-        const date = today()
-        const paymentRef = ref(database, `payments/${date}`);
+        
+        const paymentRef = ref(database, `payments/${today}`);
         const newRef = await push(paymentRef);
         
         const preparedPayment = {
