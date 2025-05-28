@@ -7,7 +7,7 @@ const { Server } = require("socket.io");
 const cron = require("node-cron");
 const { Login, SignUp } = require('./controllers/auth.controller')
 const { addProduct, getAllProducts } = require('./controllers/product.controller');
-const { addCategory, getCategory } = require('./controllers/category.contoller');
+const { addCategory, getCategory } = require('./controllers/category.controller');
 const { addCustomer, getCustomers, addCustomerInvoicePayment } = require('./controllers/customer.controller');
 
 
