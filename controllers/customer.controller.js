@@ -130,8 +130,9 @@ const addPayment = async (req, res) => {
         if (!paymentDetails || !paymentDetails.paymentValue || !paymentDetails.customerId || !paymentDetails.customerName) {
             return res.status(400).json({ error: "Missing payment Value or customer Id fields." });
         }
-        
-        const paymentRef = ref(database, `payments/${today}`);
+
+        const date = today()
+        const paymentRef = ref(database, `payments/${date}`);
         const newRef = await push(paymentRef);
         
         const preparedPayment = {
