@@ -32,22 +32,23 @@ const deleteInvoice = async (req, res) => {
 
     await remove(ref(database, `customer/${customerId}/invoices/${invoiceId}`));
 
-    const invoiceRef = ref(database, `invoices/${invoiceId}/items`);
-    const snapshot = await get(invoiceRef);
+    const itemsRef = ref(database, `invoices/${invoiceId}/items`);
+    const snapshot = await get(itemsRef);
     const itemsData = snapshot.val();
-
+    
     console.log(itemsData)
-      await Promise.all(
-        itemsData.map(async (item) => {
-          console.log(item)
-          const itemRef = ref(database, `products/${item.id}/quantity`);
-          const itemSnapshot = await get(itemRef);
-          const currentQuantity = Number(itemSnapshot.val());
-          const updatedQuantity = currentQuantity + Number(item.quantity);
-          await set(itemRef, updatedQuantity);
-        })
-      );
-
+    await Promise.all(
+      itemsData.map(async (item) => {
+        console.log(item)
+        const itemRef = ref(database, `products/${item.id}/quantity`);
+        const itemSnapshot = await get(itemRef);
+        const currentQuantity = Number(itemSnapshot.val());
+        const updatedQuantity = currentQuantity + Number(item.quantity);
+        await set(itemRef, updatedQuantity);
+      })
+    );
+    
+    const invoiceRef = ref(database, `invoices/${invoiceId}`);
     await remove(invoiceRef);
 
     return res.status(200).json({ success: true, message: "Invoice deleted successfully." });
