@@ -36,10 +36,10 @@ const deleteInvoice = async (req, res) => {
     const snapshot = await get(invoiceRef);
     const itemsData = snapshot.val();
 
-    if (itemsData) {
-        await Promise.all(
+    console.log(itemsData)
+      await Promise.all(
         itemsData.map(async (item) => {
-            console.log(item)
+          console.log(item)
           const itemRef = ref(database, `products/${item.id}/quantity`);
           const itemSnapshot = await get(itemRef);
           const currentQuantity = Number(itemSnapshot.val());
@@ -47,7 +47,6 @@ const deleteInvoice = async (req, res) => {
           await set(itemRef, updatedQuantity);
         })
       );
-    }
 
     await remove(invoiceRef);
 
