@@ -47,7 +47,6 @@ const updateProduct = async (req, res) => {
           id: newProduct.id,
           buyPrice: Number(newProduct.buyPrice),
           sellPrice: Number(newProduct.sellPrice),
-          discount: Number(newProduct.discount),
           category: newProduct.category.trim(),
           name: newProduct.name.trim(),
         };
