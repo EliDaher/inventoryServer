@@ -10,6 +10,7 @@ const { addProduct, getAllProducts } = require('./controllers/product.controller
 const { addCategory, getCategory } = require('./controllers/category.controller');
 const { addCustomer, getCustomers, addCustomerInvoicePayment, addPayment } = require('./controllers/customer.controller');
 const { deletePayment } = require('./controllers/payment.controller');
+const { deleteInvoice } = require('./controllers/invoice.controller');
 
 
 const app = express();
@@ -70,6 +71,9 @@ app.post('/addPayment', addPayment)
 
 //حزف دفعة
 app.delete('/deletePayment', deletePayment)
+
+//حزف فاتورة
+app.delete('/deleteInvoice', deleteInvoice)
 
 
 
