@@ -32,7 +32,7 @@ const deleteInvoice = async (req, res) => {
 
     await remove(ref(database, `customer/${customerId}/invoices/${invoiceId}`));
 
-    const invoiceRef = ref(database, `invoices/${invoiceDate}/${invoiceId}/items`);
+    const invoiceRef = ref(database, `invoices/${invoiceId}/items`);
     const snapshot = await get(invoiceRef);
     const itemsData = snapshot.val();
 
