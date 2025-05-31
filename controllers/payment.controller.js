@@ -31,6 +31,8 @@ const deletePayment = async (req, res) => {
 
     // تحديث الرصيد
     await set(ref(database, `customer/${customerId}/balance`), updatedBalance);
+    
+    await remove(ref(database, `customer/${customerId}/invoices/${paymentId}`));
 
     // حذف الدفعة
     const paymentRef = ref(database, `payments/${paymentDate}/${paymentId}`);
