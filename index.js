@@ -9,7 +9,7 @@ const { Login, SignUp } = require('./controllers/auth.controller')
 const { addProduct, getAllProducts, updateProduct } = require('./controllers/product.controller');
 const { addCategory, getCategory } = require('./controllers/category.controller');
 const { addCustomer, getCustomers, addCustomerInvoicePayment, addPayment } = require('./controllers/customer.controller');
-const { deletePayment } = require('./controllers/payment.controller');
+const { deletePayment, getAllPayments } = require('./controllers/payment.controller');
 const { deleteInvoice } = require('./controllers/invoice.controller');
 
 
@@ -77,6 +77,9 @@ app.delete('/deleteInvoice', deleteInvoice)
 
 //تعديل منتج
 app.post('/updateProduct', updateProduct)
+
+//اعادة المنتجات
+app.get('/getAllPayments', getAllPayments)
 
 
 

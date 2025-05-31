@@ -10,6 +10,26 @@ const today = (() => {
 })();
 
 
+const getAllPayments = async (req, res) => {
+
+    try {   
+
+        const paymentRef = ref(database, `payments`);
+        const paymentSnapshot = await get(paymentRef);
+
+        if (!paymentSnapshot.exists()) {
+          return res.status(404).json({ error: "payments not found." });
+        }
+
+        return res.status(200).json({ paymentData: paymentSnapshot.val() });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+
+}
+
+
 const deletePayment = async (req, res) => {
   try {
     const { paymentDate, paymentId, customerId, paymentValue } = req.body;
@@ -45,4 +65,4 @@ const deletePayment = async (req, res) => {
   }
 };
 
-module.exports = { deletePayment };
+module.exports = { deletePayment, getAllPayments };
