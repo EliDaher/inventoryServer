@@ -37,8 +37,9 @@ const deleteInvoice = async (req, res) => {
     const itemsData = snapshot.val();
 
     if (itemsData) {
-      await Promise.all(
+        await Promise.all(
         itemsData.map(async (item) => {
+            console.log(item)
           const itemRef = ref(database, `products/${item.id}/quantity`);
           const itemSnapshot = await get(itemRef);
           const currentQuantity = Number(itemSnapshot.val());
