@@ -149,14 +149,14 @@ const addPayment = async (req, res) => {
         await set(balanceRef, Number(oldBalance + Number(paymentDetails.paymentValue)))
 
         
-        const customerInvoicesRef = ref(database, `customer/${paymentDetails.customerId}/invoices`);
+        const customerInvoicesRef = ref(database, `customer/${paymentDetails.customerId}/invoices/${newRef.key}`);
         const preparedInvoice = {
             finalAmount: Number(paymentDetails.paymentValue),
             createdAt: paymentDetails.createdAt || new Date().toISOString(),
             id: newRef.key,
             items: [],
         };
-        await push(customerInvoicesRef, preparedInvoice)
+        await set(customerInvoicesRef, preparedInvoice)
 
         
 
