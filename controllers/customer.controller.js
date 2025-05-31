@@ -89,7 +89,7 @@ const addCustomerInvoicePayment = async (req, res) => {
         await set(newInvoiceRef, preparedInvoice);
 
         // 4. حفظ الفاتورة ضمن مسار عام للفواتير (اختياري حسب نظامك)
-        const generalInvoiceRef = ref(database, `invoices/${newInvoiceRef.key}`);
+        const generalInvoiceRef = ref(database, `invoices/${today}/${newInvoiceRef.key}`);
         await set(generalInvoiceRef, newInvoice);
 
         // 5. تحديث رصيد الزبون

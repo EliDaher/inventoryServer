@@ -32,7 +32,7 @@ const deleteInvoice = async (req, res) => {
 
     await remove(ref(database, `customer/${customerId}/invoices/${invoiceId}`));
 
-    const itemsRef = ref(database, `invoices/${invoiceId}/items`);
+    const itemsRef = ref(database, `invoices/${invoiceDate}/${invoiceId}/items`);
     const snapshot = await get(itemsRef);
     const itemsData = snapshot.val();
     
@@ -48,7 +48,7 @@ const deleteInvoice = async (req, res) => {
       })
     );
     
-    const invoiceRef = ref(database, `invoices/${invoiceId}`);
+    const invoiceRef = ref(database, `invoices/${invoiceDate}/${invoiceId}`);
     await remove(invoiceRef);
 
     return res.status(200).json({ success: true, message: "Invoice deleted successfully." });
