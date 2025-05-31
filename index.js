@@ -9,6 +9,7 @@ const { Login, SignUp } = require('./controllers/auth.controller')
 const { addProduct, getAllProducts } = require('./controllers/product.controller');
 const { addCategory, getCategory } = require('./controllers/category.controller');
 const { addCustomer, getCustomers, addCustomerInvoicePayment, addPayment } = require('./controllers/customer.controller');
+const { deletePayment } = require('./controllers/payment.controller');
 
 
 const app = express();
@@ -67,6 +68,8 @@ app.post('/addCustomerInvoicePayment', addCustomerInvoicePayment)
 // اضافة دفعة
 app.post('/addPayment', addPayment)
 
+//حزف دفعة
+app.delete('/deletePayment', deletePayment)
 
 
 
