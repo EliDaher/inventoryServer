@@ -80,4 +80,4 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-module.exports = { addProduct, getAllProducts };
+module.exports = { addProduct, getAllProducts, updateProduct };

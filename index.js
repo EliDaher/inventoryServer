@@ -6,7 +6,7 @@ require('dotenv').config(); // تحميل متغيرات البيئة
 const { Server } = require("socket.io");
 const cron = require("node-cron");
 const { Login, SignUp } = require('./controllers/auth.controller')
-const { addProduct, getAllProducts } = require('./controllers/product.controller');
+const { addProduct, getAllProducts, updateProduct } = require('./controllers/product.controller');
 const { addCategory, getCategory } = require('./controllers/category.controller');
 const { addCustomer, getCustomers, addCustomerInvoicePayment, addPayment } = require('./controllers/customer.controller');
 const { deletePayment } = require('./controllers/payment.controller');
@@ -75,6 +75,8 @@ app.delete('/deletePayment', deletePayment)
 //حزف فاتورة
 app.delete('/deleteInvoice', deleteInvoice)
 
+//تعديل منتج
+app.post('/updateProduct', updateProduct)
 
 
 
